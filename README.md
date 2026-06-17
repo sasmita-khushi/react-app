@@ -54,3 +54,90 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+###
+
+# React Dropdown Component
+
+# Dropdown Component
+
+A reusable React dropdown component that allows users to select an option from a list.
+
+## Features
+
+- Displays a list of selectable options.
+- Supports custom placeholder text.
+- Shows the selected value.
+- Toggles open and close on click.
+- Calls a callback function when an item is selected.
+
+## Props
+
+| Prop        | Type          | Description                     |
+| ----------- | ------------- | ------------------------------- |
+| data        | Array<Object> | Array of items to display       |
+| placeholder | string        | Text shown before selection     |
+| value       | string        | Selected value (optional)       |
+| onSelect    | function      | Called when an item is selected |
+| id          | string        | Key used to identify items      |
+
+## Usage
+
+```jsx
+const students = [
+  { name: "Manas", rollNo: 1 },
+  { name: "Khushi", rollNo: 2 },
+  { name: "Misty", rollNo: 3 },
+];
+
+<DropDown
+  data={students}
+  placeholder="Select Student"
+  id="name"
+  onSelect={(student) => console.log(student)}
+/>;
+```
+
+## Component Flow
+
+```mermaid
+flowchart TD
+    A[User Clicks Dropdown] --> B{Dropdown Open?}
+    B -->|No| C[Open Dropdown]
+    B -->|Yes| D[Close Dropdown]
+    C --> E[Display Options]
+    E --> F[User Selects Option]
+    F --> G[Update Selected Value]
+    G --> H[Call onSelect Callback]
+    H --> D
+```
+
+## State Management
+
+```mermaid
+graph LR
+    UserAction --> openBox
+    UserAction --> selectedValue
+    selectedValue --> UI
+    openBox --> OptionsList
+```
+
+## Example Behavior
+
+1. User clicks the dropdown.
+2. The options list becomes visible.
+3. User selects an item.
+4. The selected item is displayed.
+5. The `onSelect` callback is triggered.
+6. The dropdown closes automatically.
+
+## Technologies Used
+
+- React
+- TypeScript
+- Tailwind CSS
+- Ionicons
+
+```
+
+```

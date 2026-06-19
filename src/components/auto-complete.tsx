@@ -5,43 +5,46 @@ type AutoCompleteType<T> = {
   data: T[];
   placeholder: string;
   value?: T;
-  onChange?: (value: T | null) => void;
+  onChange: (value: T) => void;
+  id: keyof T;
+  propsToBind: keyof T;
+  reset?: boolean;
 };
 
-export default function AutoComplete<T extends string>(
+export default function AutoComplete<T extends Record<string, any>>(
   props: AutoCompleteType<T>,
 ) {
   const [openBox, setOpenBox] = useState(false);
-  const [selected, setSelected] = useState<T | null>(props.value ?? null);
+  const [selected, setSelected] = useState<T | undefined>(props.value);
   const [search, setSearch] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // console.log("rerender ", props.data);
   const filteredData = props.data.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase()),
+    item[props.propsToBind].toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleOpenBox = () => {
-    setOpenBox((prev) => !prev);
+    setOpenBox(true);
   };
 
   const handleSelect = (item: T) => {
     setSelected(item);
-    setSearch(item);
+    setSearch(item[props.propsToBind]);
     setOpenBox(false);
     if (props.onChange) props.onChange(item);
   };
 
   const handleReset = () => {
-    setSelected(null);
+    setSelected(undefined);
     setSearch("");
   };
 
   const handleKeyDown = (event: any) => {
-    // console.log(event.key);
     if (event.key === "Escape") {
-      setOpenBox(false);
+      // setOpenBox(false);
     }
 
     if (event.key === "ArrowDown") {
@@ -61,11 +64,20 @@ export default function AutoComplete<T extends string>(
 
       if (item) {
         setSelected(item);
-        setSearch(item);
+        setSearch(item[props.propsToBind]);
+
+        if (props.onChange) props.onChange(item);
         setOpenBox(false);
       }
     }
   };
+
+  useEffect(() => {
+    if (props.reset) {
+      setSelected(undefined);
+      setSearch("");
+    }
+  }, [props.reset]);
 
   useEffect(() => {
     setHighlightedIndex(0);
@@ -92,6 +104,7 @@ export default function AutoComplete<T extends string>(
           placeholder={props.placeholder}
           onChange={(e) => {
             setSearch(e.target.value);
+            setOpenBox(true);
           }}
           onClick={handleOpenBox}
           className="border border-gray-700 rounded-lg p-3 h-16 w-full"
@@ -125,6 +138,8 @@ export default function AutoComplete<T extends string>(
           data={filteredData}
           onSelect={handleSelect}
           highlightedIndex={highlightedIndex}
+          propsToBind={props.propsToBind}
+          id={props.id}
         />
       </div>
     </div>
@@ -136,22 +151,24 @@ type BoxType<T> = {
   data: T[];
   onSelect: (value: T) => void;
   highlightedIndex: number;
+  propsToBind: keyof T;
+  id: keyof T;
 };
 
-function Box<T extends string>(props: BoxType<T>) {
+function Box<T extends Record<string, any>>(props: BoxType<T>) {
   if (!props.openBox) return null;
 
   return (
-    <div className="absolute shadow-md left-0 bg-gray-100 w-full rounded-md mt-1 z-50">
-      {props.data.map((data, i) => (
+    <div className="absolute shadow-md left-0 bg-gray-100 w-full rounded-md mt-1 z-50 max-h-[400px] overflow-y-scroll">
+      {props.data.map((item, i) => (
         <div
-          key={i}
-          onClick={() => props.onSelect(data)}
+          key={item[props.id]}
+          onClick={() => props.onSelect(item)}
           className={`p-2 px-5 border-b border-gray-200 cursor-pointer ${
             i === props.highlightedIndex ? "bg-blue-200" : "hover:bg-gray-300"
           }`}
         >
-          {data}
+          {item[props.propsToBind]}
         </div>
       ))}
     </div>

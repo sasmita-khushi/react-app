@@ -1,26 +1,28 @@
 import AutoComplete from "@/components/auto-complete";
+import { useEffect, useState } from "react";
 
+type MovieType = {
+  id: number;
+  title: string;
+  year: string;
+};
 export default function AutoCompletePage() {
-  const movies = [
-    "Singham",
-    "Avatar",
-    "Batman",
-    "Jawan",
-    "The Shawshank Redemption",
-    "The Godfather",
-    "Pulp Fiction",
-  ];
+  const [movies, setMovies] = useState<MovieType[]>([]);
 
-  // const handleMovie = useMemo(
-  //   () =>
-  //     debounce((selectedMovie: string | null) => {
-  //       console.log("User selected:", selectedMovie);
-  //       console.count("handleMovie called");
-  //     }, 400),
-  //   [],
-  // );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let res = await fetch("http://localhost:3001/movies");
+        let data = await res.json();
+        setMovies(data);
+      } catch (err) {
+        console.log("Error in fetching data", err);
+      }
+    };
+    fetchData();
+  });
 
-  const handleMovie = (selectedMovie: string | null) => {
+  const handleMovie = (selectedMovie: MovieType) => {
     console.log("User selected:", selectedMovie);
     console.count("handleMovie called");
   };
@@ -31,6 +33,8 @@ export default function AutoCompletePage() {
         data={movies}
         placeholder="Search movies..."
         onChange={handleMovie}
+        id="id"
+        propsToBind="title"
       />
     </div>
   );

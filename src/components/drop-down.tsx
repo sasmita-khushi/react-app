@@ -8,6 +8,7 @@ type DropDownProps<T> = {
   onSelect: (value: T) => void;
   id: keyof T;
   propsToBind: keyof T;
+  reset: boolean;
 };
 
 export default function DropDown<T extends Record<string, any>>(
@@ -49,6 +50,11 @@ export default function DropDown<T extends Record<string, any>>(
     };
   }, []);
 
+  useEffect(() => {
+    if (props.reset) {
+      setSelected(undefined);
+    }
+  }, [props.reset]);
   return (
     <div ref={containerRef}>
       <div className="relative w-52">
